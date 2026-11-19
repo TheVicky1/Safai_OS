@@ -82,3 +82,88 @@ tests/test_profiler.py ..                                                [100%]
 
 | Test Module | Coverage Scope | Critical Invariants |
 | :--- | :--- | :--- |
+| `test_api_schemas.py` | Pydantic v2 schemas for detections, incidents, and telemetry | Validates coordinate bounding box constraints and status enums |
+| `test_dataset_augmentation.py` | Photometric and geometric augmentations (CoarseDropout) | Verifies box label consistency during synthetic occlusions |
+| `test_dataset_pipeline.py` | Image normalization, batch tensor transformations | Checks 768px letterbox padding and tensor dtype float32 |
+| `test_dataset_statistics.py` | Distribution analyzers across 5 waste classes | Prevents division-by-zero on sparse class bins |
+| `test_dataset_validator.py` | Roboflow and YOLO annotation format validator | Rejects out-of-bounds coordinates and malformed labels |
+| `test_detection_boxes.py` | Format conversions (xyxy, xywh, normalized, absolute) | Mathematical precision and non-negative width/height bounds |
+| `test_detection_matcher.py` | Ground-truth vs prediction IoU matching | IoU threshold matching and confusion matrix calculation |
+| `test_detection_stratification.py` | Stratified evaluation across scale and overlap bins | Verifies precision and recall across micro, small, medium, large bins |
+| `test_device.py` | Hardware device resolution (CUDA, MPS, CPU) | Safe CPU fallback without crashing when GPU is unavailable |
+| `test_environment.py` | Dependency checks, library versions, torch runtime | Confirms PyTorch, torchvision, and ultralytics compatibility |
+| `test_exporter.py` | ONNX and TensorRT engine export pipelines | Verifies export flags, dynamic axes, and output validity |
+| `test_inference_engine.py` | YOLO11s forward pass, batching, inference lifecycle | Rejects malformed tensors, enforces warm-up passes |
+| `test_inference_postprocess.py` | NMS (Non-Maximum Suppression) and confidence thresholds | Drops low-confidence noise, resolves overlapping bounding boxes |
+| `test_profiler.py` | Latency and throughput benchmarks | Records percentile latencies (p50, p95, p99) and memory usage |
+
+---
+
+## 2. Supabase Database and Security Suite (24 pgTAP Tests)
+
+SafaiOS relies on PostgreSQL 17 with Row Level Security (RLS) to enforce citizen isolation, driver authorization, and audit immutability. The database test suite is written in **pgTAP** (`supabase/tests/database_foundation.test_test.sql`).
+
+### Running Database Tests Locally
+
+Start local Supabase containers and run the test suite:
+
+```bash
+# 1. Start local Supabase (requires Docker running)
+supabase start
+
+# 2. Reset database and apply all migrations
+supabase db reset
+
+# 3. Execute pgTAP test suite
+supabase test db
+```
+
+Expected output:
+```text
+Testing database_foundation.test_test.sql ...
+ok 1 - Core tables must exist
+ok 2 - Enums must exist
+ok 3 - RLS enabled on profiles
+ok 4 - RLS enabled on incidents
+ok 5 - RLS enabled on assignments
+ok 6 - RLS enabled on verifications
+ok 7 - RLS enabled on safai_coins_ledger
+ok 8 - RLS enabled on audit_logs
+ok 9 - Citizen A cannot read Citizen B private incident
+ok 10 - Citizen A can read public incident
+ok 11 - Driver cannot see unrelated assignments
+ok 12 - Driver can see assigned assignments
+ok 13 - Driver cannot self-approve cleanup verification
+ok 14 - Citizen reporter can approve valid cleanup
+ok 15 - Unauthorized user cannot insert verification decision
+ok 16 - Viewer cannot insert or update incidents
+ok 17 - Admin cannot elevate privileges to Superadmin
+ok 18 - Direct balance updates on profiles are blocked
+ok 19 - Safai Coins ledger is insert-only (no updates)
+ok 20 - Safai Coins ledger is insert-only (no deletes)
+ok 21 - Duplicate reward idempotency key is rejected
+ok 22 - Incident storage bucket policies enforce isolation
+ok 23 - Assignment evidence storage bucket enforces driver scope
+ok 24 - Audit logs cannot be updated or deleted by normal roles
+1..24
+All 24 tests passed!
+```
+
+### Security Scenarios Tested
+
+1. **Citizen Isolation**: A citizen authenticated with User ID `A` can query only their own reported incidents or public incidents. Attempting to query another citizen's private unverified report yields 0 rows.
+2. **Driver Isolation**: Drivers can view only assignments explicitly dispatched to their driver profile ID.
+3. **Anti Self-Approval Constraint**: A driver assigned to clean an incident cannot insert a verification record approving their own cleanup. Such attempts trigger an RLS rejection or database trigger exception.
+4. **Append-Only Financial Ledger**: The `safai_coins_ledger` table strictly forbids `UPDATE` and `DELETE` statements. Any balance alteration must be an `INSERT` referencing an authorized event.
+5. **Idempotency Protection**: Replaying the same `idempotency_key` for a reward or transaction fails with a unique constraint violation (`23505`).
+6. **Immutable Audit Trail**: The `audit_logs` table disallows any client modifications or deletions, preserving administrative accountability.
+
+---
+
+## 3. Database Schema Linting
+
+Supabase CLI includes an automated linter based on `splinter` that scans database migrations for common pitfalls:
+- Missing primary keys.
+- Unindexed foreign keys.
+- Permissive RLS policies (e.g. `USING (true)` on write operations).
+- Insecure `SECURITY DEFINER` functions with missing `search_path`.
