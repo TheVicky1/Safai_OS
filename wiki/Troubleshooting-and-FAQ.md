@@ -206,7 +206,7 @@ GitHub blocks merging if there are unresolved comments from code reviews.
 2. Clone your fork locally and create a descriptive branch: `git checkout -b fix/issue-title`.
 3. Make atomic, well-documented changes.
 4. Run tests: `pytest tests/ -v` (151 passing).
-5. Run secret scan: `node scratch/secret-scan.mjs`.
+5. Run secret scan: `node scripts/secret-scan.mjs`.
 6. Push to your fork and submit a PR to `main`.
 7. Once approved and checks pass, the maintainers will squash-merge your PR.
 
