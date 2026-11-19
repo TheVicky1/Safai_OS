@@ -47,3 +47,46 @@ The database foundation defines 15 primary application entities plus the support
 
 ## 🛡️ Row-Level Security (RLS) Policy Model
 
+SafaiOS policies enforce granular, least-privilege access rules:
+
+```sql
+-- Example: Incidents Select Policy
+create policy incidents_select_authorized on public.incidents
+for select to authenticated
+using (public.can_view_incident(id));
+
+-- Helper function can_view_incident enforces:
+-- 1. Reporting citizen can view their own report
+-- 2. Assigned driver can view the incident while assignment is active
+-- 3. Staff with ADMIN, VIEWER, or SUPERADMIN roles can view all incidents
+```
+
+### Role Separation Matrix
+
+| Role | Incident Read | Incident Create | Evidence Submit | Verify Cleanup | Coin Ledger | Admin Grants |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`CITIZEN`** | Own only | ✅ (Draft) | ❌ | ✅ (Own Report) | Own account | ❌ |
+| **`DRIVER`** | Assigned only | ❌ | ✅ (Assigned) | ❌ (Strict Ban) | Own account | ❌ |
+| **`VIEWER`** | All | ❌ | ❌ | ❌ | All (Read) | ❌ |
+| **`ADMIN`** | All | ❌ | ❌ | ✅ (Escalated) | All (Read) | ❌ |
+| **`SUPERADMIN`** | All | ❌ | ❌ | ✅ | All (Read) | ✅ |
+
+---
+
+## 🔒 Function Hardening & Privilege Model
+
+To prevent privilege escalation and search path injection attacks:
+
+1. **Search Path Pinning**:
+   ```sql
+   create function public.has_app_role(required_roles public.app_role[])
+   returns boolean
+   language sql stable security definer
+   set search_path = public, auth
+   as $$ ... $$;
+   ```
+2. **Revocation of Public Execute**:
+   ```sql
+   revoke all on all tables in schema public from anon;
+   revoke all on all tables in schema public from authenticated;
+   -- Grant only necessary capabilities to authenticated
