@@ -1,0 +1,2 @@
+-- SafaiOS Local Development Seed Script
+-- Add local seed records here if needed for frontend development.
