@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: SafaiOS Community Discussions
+    url: https://github.com/TheVicky1/Safai_OS/discussions
+    about: Ask questions, share ideas, and discuss civic technology implementations.
+  - name: SafaiOS Technical Wiki
+    url: https://github.com/TheVicky1/Safai_OS/wiki
+    about: Read comprehensive guides on computer vision, database schemas, and contributor onboarding.
+  - name: Security Vulnerability Reporting
+    url: https://github.com/TheVicky1/Safai_OS/security/advisories
+    about: Report sensitive security vulnerabilities confidentially.
+
