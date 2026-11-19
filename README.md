@@ -383,11 +383,18 @@ Safai_OS/
 │   └── safai-logo.png           # Official 3D emerald-gold Safai logo
 ├── configs/                     # Training and evaluation YAML configs
 ├── data/                        # Dataset manifest specifications & splits
-├── docs/                        # Engineering documentation & architecture specifications
-│   ├── API.md                   # Core detection API schema documentation
-│   ├── ARCHITECTURE.md          # Computer vision pipeline specification
-│   ├── DEPLOYMENT.md            # Edge camera and server deployment guide
-│   └── EVALUATION_METHODOLOGY.md# Stratified evaluation metrics & tiering
+├── docs/                        # Canonical engineering documentation and specifications
+│   ├── README.md                # Master documentation hub and navigation sitemap
+│   ├── ARCHITECTURE.md          # Computer vision pipeline and edge architecture specification
+│   ├── DATA_MODEL.md            # Relational database schema and RLS security policies
+│   ├── API.md                   # Edge detection REST API contracts and payload schemas
+│   ├── DEVELOPMENT.md           # Developer environment setup, tooling, and contributing guide
+│   ├── DEPLOYMENT.md            # Hardware tiers, ONNX/TensorRT export, and production runbook
+│   ├── CI_PIPELINE.md           # GitHub Actions CI workflows and automated quality gates
+│   ├── SECURITY.md              # Threat model, RBAC matrix, and audit policies
+│   ├── TESTING.md               # 151 Python tests, 24 pgTAP tests, and test runbooks
+│   ├── EVALUATION_METHODOLOGY.md# Stratified evaluation metrics and operating points
+│   └── ROADMAP.md               # Strategic product and engineering milestone roadmap
 ├── models/                      # Model definitions and export scripts
 ├── reports/                     # Forensic audit logs, QA reports & milestone summaries
 │   ├── evaluations/             # Validation batch figures and prediction logs
@@ -441,17 +448,21 @@ Contributions to SafaiOS are warmly welcomed! Whether you are optimizing compute
   <h2>Documentation Index</h2>
 </div>
 
-| Document | Focus & Scope |
-| :--- | :--- |
-| 🏗️ [**Architecture & Engineering Spec**](docs/ARCHITECTURE.md) | Vision pipeline, 768px letterbox resizing, and waste taxonomy |
-| 🗄️ [**Database Foundation Guide**](Application/Documentation/DATABASE_FOUNDATION.md) | 16 entities, RLS policies, storage rules, and pgTAP suite |
-| 📋 [**Final Architecture Sign-Off**](Application/Documentation/FINAL_ARCHITECTURE_SIGNOFF.md) | Approved product decisions, lifecycle state machine, and boundaries |
-| 🛡️ [**Security & RBAC Architecture**](Application/Documentation/SECURITY_AND_RBAC.md) | Role predicates, authentication boundaries, and verifier eligibility |
-| 🔌 [**API Contract Specification**](Application/Documentation/API_CONTRACT.md) | Endpoint specifications, payload schemas, and response formats |
-| 🤖 [**ML Integration Contract**](Application/Documentation/ML_INTEGRATION_CONTRACT.md) | Checkpoint hashes, YOLO11s hyperparameters, and inference schemas |
-| 📊 [**Evaluation Methodology**](docs/EVALUATION_METHODOLOGY.md) | Stratification tiers (scale, overlap) and operating metric curves |
-| 🚀 [**Deployment Runbook**](docs/DEPLOYMENT.md) | Edge camera device setup, ONNX export, and production latency targets |
-| 🗺️ [**Application Roadmap**](Application/Documentation/APPLICATION_ROADMAP.md) | Milestone tracking across Foundation, Dispatch, and Governance phases |
+| Document | Focus & Specification | Target Audience |
+| :--- | :--- | :--- |
+| 📚 [**Master Documentation Hub**](docs/README.md) | Central documentation directory, sitemap, and navigation hub | All Contributors |
+| 🏗️ [**Technical Architecture**](docs/ARCHITECTURE.md) | Vision pipeline, 768px letterbox resizing, edge topology, and waste taxonomy | CV Engineers, Architects |
+| 🗄️ [**Relational Data Model**](docs/DATA_MODEL.md) | 16 PostgreSQL database entities, PostGIS coordinates, and storage bucket RLS | Backend Developers, DBA |
+| 🔌 [**Edge Detection API**](docs/API.md) | `/v1/detect` and batch contracts, Pydantic schemas, and latency SLAs | API Consumers, Mobile/Web |
+| 💻 [**Developer Setup Guide**](docs/DEVELOPMENT.md) | Local environment, Python venv, CPU PyTorch setup, and Supabase CLI | All Contributors |
+| 🚀 [**Production Deployment**](docs/DEPLOYMENT.md) | Jetson Orin/Nano, TensorRT 10.x FP16 export, systemd service, and Docker | DevOps, Edge Engineers |
+| ⚙️ [**CI & Quality Gates**](docs/CI_PIPELINE.md) | GitHub Actions CI workflows, the 7 automated quality gates, and rulesets | Maintainers, Contributors |
+| 🛡️ [**Security & RBAC Architecture**](docs/SECURITY.md) | Threat model, role predicates, self-verification denial, and ledger rules | Security Engineers, Auditors |
+| 🧪 [**Testing Runbook**](docs/TESTING.md) | 151 Python tests, 24 pgTAP database tests, secret scanner, and link audits | QA, Test Automation |
+| 📊 [**Evaluation Methodology**](docs/EVALUATION_METHODOLOGY.md) | Operational operating points (`conf=0.25`, `iou=0.60`) and scale stratification | Data Scientists, Evaluators |
+| 🗺️ [**Product Roadmap**](docs/ROADMAP.md) | Strategic milestone tracking across Foundation, Dispatch, and Governance | Product Leads, Community |
+| 📋 [**Final Architecture Sign-Off**](Application/Documentation/FINAL_ARCHITECTURE_SIGNOFF.md) | Approved product decisions, lifecycle state machine, and boundaries | System Architects |
+| 🤖 [**ML Integration Contract**](Application/Documentation/ML_INTEGRATION_CONTRACT.md) | Checkpoint hashes, YOLO11s hyperparameters, and inference schemas | ML Engineers |
 
 ---
 
