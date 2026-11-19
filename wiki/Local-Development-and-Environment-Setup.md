@@ -107,3 +107,40 @@ supabase start
 # 2. Apply all schema migrations and seeds to local Postgres
 supabase db reset
 
+# 3. Execute the 24-point pgTAP security and RLS test suite
+supabase test db
+
+# 4. Run database lint checks
+supabase db lint --level error --fail-on error
+```
+
+### Local Endpoint Dashboard
+- **Supabase Studio (Web UI)**: [http://localhost:54323](http://localhost:54323)
+- **REST API Gateway**: [http://localhost:54321](http://localhost:54321)
+- **Local PostgreSQL Connection**: `postgresql://postgres:postgres@localhost:54322/postgres`
+
+---
+
+## 🧹 Quality Gate Verification
+
+Before committing changes, execute the local quality gates:
+
+```bash
+# 1. Python ML & core unit test matrix
+pytest tests/ -v
+
+# 2. Database authorization tests (requires supabase start)
+supabase test db
+
+# 3. Database linting
+supabase db lint --level error --fail-on error
+```
+
+---
+
+<div align="center">
+
+[← Previous: Contributor Guide & Issues](Contributor-Guide-and-Good-First-Issues) | [Next: Testing & Quality Gates →](Testing-and-Quality-Gates)
+
+</div>
+
