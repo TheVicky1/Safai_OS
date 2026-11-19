@@ -46,3 +46,51 @@ SafaiOS classifies detected waste into five standard municipal material classes:
             │
             ▼
 [ YOLO11s Backbone ] ──────────► Modified CSPDarknet with C3k2 blocks and SPPF pooling
+            │
+            ▼
+[ Path Aggregation Neck ] ─────► Multi-scale feature fusion across shallow and deep layers
+            │
+            ▼
+[ Decoupled Detection Head ] ──► Dual-branch regression and classification heads
+            │
+            ▼
+[ Class-Specific NMS ] ────────► Non-Maximum Suppression (conf=0.25, iou=0.60)
+            │
+            ▼
+[ Normalized Output ] ─────────► Normalized bounding boxes [x_center, y_center, width, height]
+```
+
+### Preprocessing Protocol
+- **Resolution**: 768px input dimension (`imgsz=768`) balancing fine-grained feature resolution against low latency.
+- **Letterbox Padding**: Aspect-ratio preserving bilinear resize with symmetric border padding (`color=(114, 114, 114)`).
+- **Normalization**: Zero-mean, unit-variance tensor conversion (`0.0 - 1.0` float32 range).
+
+### Operational Post-Processing Parameters
+- **Operating Confidence Threshold (`conf`)**: `0.25` for operational deployment.
+- **NMS IoU Threshold (`iou`)**: `0.60` preventing duplicate candidate suppression in dense heaps.
+- **Evaluation Matching IoU**: Strict `0.50` IoU for formal evaluation and precision/recall calculations.
+
+---
+
+## 📈 Model Evolution & Experimental Milestones
+
+SafaiOS model development follows strict experimental gates tracked under `reports/experiments/`:
+
+### 1. `E001` - Baseline Configuration & Verification
+- Established the baseline input resolution scaling and dataset loading contracts.
+- Confirmed initial inference latency targets across CPU and edge accelerators.
+
+### 2. `E002` - Production YOLO11s Model
+- Trained on the complete **SafaiOS_Dataset_v10k** dataset at 768px input resolution.
+- **Weights Path**: `runs/detect/runs/detect/runs/safaios/safaios_yolo11s_v10k_img768/weights/best.pt`.
+- **Checkpoint SHA-256**: `8bd30b05a0b4a84d95c5e71f213b967d255144a8fe57791ef110b920fc86d073`.
+- **Operational Performance**: Serves as the signed-off production detector for Phase 1.
+
+### 3. `E003` - High-Resolution Evaluation Protocol
+- Stratified evaluation across fine-grained scale strata (Small, Medium, Large area tiers).
+- Benchmarked peak F1 thresholds against operational confidence thresholds.
+
+### 4. `E004` - CoarseDropout Occlusion Invariance
+- Implements specialized data augmentation simulating extreme real-world occlusion.
+- Injects 2 to 8 rectangular dropout holes (`hole_height: 0.05-0.20`, `hole_width: 0.05-0.20`) during training iterations.
+- Significantly increases recall on partially buried or overlapping waste instances in dense municipal dumps.
