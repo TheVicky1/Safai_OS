@@ -94,3 +94,45 @@ SafaiOS model development follows strict experimental gates tracked under `repor
 - Implements specialized data augmentation simulating extreme real-world occlusion.
 - Injects 2 to 8 rectangular dropout holes (`hole_height: 0.05-0.20`, `hole_width: 0.05-0.20`) during training iterations.
 - Significantly increases recall on partially buried or overlapping waste instances in dense municipal dumps.
+
+---
+
+## 📦 Dataset Engineering (`SafaiOS_Dataset_v10k`)
+
+The model family is trained on a rigorously curated dataset adhering to strict split hygiene:
+
+```text
+SafaiOS_Dataset_v10k/
+├── train/              # 7,000+ training images with multi-material labels
+├── val/                # 1,500 validation images for epoch checkpoint selection
+├── test_locked_v2/     # 1,500 locked test images (unmodified frozen benchmark)
+└── india_real_world/   # Specialized independent Indian municipal evaluation set
+```
+
+### Dataset Hygiene Rules
+1. **Zero Cross-Split Contamination**: Deterministic split allocation ensures that identical or near-duplicate scenes never span across train and evaluation sets.
+2. **Provenance & License Integrity**: Every image is logged with source origin, attribution, and license compliance in the acquisition registry.
+3. **Class Balance Calibration**: Strategic sample weighting to prevent majority-class domination by single-use plastic wrappers.
+
+---
+
+## 🔬 Stratified Evaluation Methodology
+
+To ensure transparent reporting, SafaiOS models are evaluated along two orthogonal stratification dimensions:
+
+### 1. Relative Scale Stratum
+- **Small Instances**: Normalized bounding box area $< 0.025$ (e.g., bottle caps, crushed cans).
+- **Medium Instances**: Normalized area between $0.025$ and $0.050$ (e.g., standard water bottles).
+- **Large Instances**: Normalized area $> 0.050$ (e.g., large cardboard boxes, bulk dump heaps).
+
+### 2. Overlap Stratum
+- Evaluates model performance on heavily congested scenes where ground-truth boxes exhibit pairwise IoU $\ge 0.10$ with neighboring instances.
+
+---
+
+<div align="center">
+
+[← Previous: System Architecture](System-Architecture) | [Next: Database & Security Foundation →](Database-and-Security-Foundation)
+
+</div>
+
