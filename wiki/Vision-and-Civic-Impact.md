@@ -42,3 +42,48 @@ SafaiOS re-architects municipal waste governance from the ground up by combining
 |  [ 8. Idempotent Safai Coins ] ◄──── [ 7. Confirmed Resolution ]        |
 +-------------------------------------------------------------------------+
 ```
+
+### Key Pillars of the Solution
+
+- **Transparency Through Visual Evidence**: Every incident requires geotagged photographic evidence at both report intake and cleanup completion.
+- **Dual-Actor Approval**: Resolution requires the concurrence of the citizen who reported the problem.
+- **Strict Anti-Fraud Governance**: Those who perform the physical cleanup cannot approve their own verification decision.
+- **Civic Reward Incentivization**: Citizens are rewarded with non-transferable, cryptographic Safai Coins upon verified cleanups, aligning community incentives with public cleanliness.
+
+---
+
+## 🌍 Global Alignment & Sustainable Development Goals (SDGs)
+
+SafaiOS directly maps to key international and national public health frameworks:
+
+### 1. United Nations Sustainable Development Goals
+- **SDG 11: Sustainable Cities & Communities (Target 11.6)**: Reduce the adverse per capita environmental impact of cities, including municipal waste management.
+- **SDG 12: Responsible Consumption & Production (Target 12.5)**: Substantially reduce waste generation through prevention, reduction, recycling, and reuse.
+- **SDG 14 & 15: Life Below Water & On Land**: Prevent plastic leakage and toxic runoff into urban waterways and terrestrial ecosystems.
+
+### 2. National Initiatives (Swachh Bharat Mission)
+SafaiOS provides municipal corporations and urban local bodies (ULBs) with an audit-ready, digital public infrastructure (DPI) that supports clean city rankings, mechanized sanitary fleet management, and direct public participation.
+
+---
+
+## 📊 Economic & Ecological Impact
+
+By deploying SafaiOS, urban municipalities achieve tangible operational improvements:
+
+| Dimension | Legacy Municipal Workflows | SafaiOS Operating Model |
+| :--- | :--- | :--- |
+| **Verification Method** | Self-reported claim or contractor logbook | Dual-actor photographic proof with citizen verification |
+| **AI Waste Classification** | None / Manual sorting after collection | Instant multi-material classification (768px YOLO11s) |
+| **Fleet Routing** | Static daily routes regardless of volume | Incident-driven dynamic dispatch based on localized reports |
+| **Audit Trail** | Vulnerable to post-facto ledger tampering | Append-only, tamper-proof PostgreSQL audit logging |
+| **Citizen Incentive** | Civic altruism without tangible feedback | Verified Safai Coins rewarding active community stewards |
+| **Resolution Integrity** | Susceptible to unverified ghost cleanups | Cryptographically protected against self-verification fraud |
+
+---
+
+<div align="center">
+
+[Next: System Architecture →](System-Architecture)
+
+</div>
+
