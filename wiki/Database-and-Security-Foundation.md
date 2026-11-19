@@ -90,3 +90,34 @@ To prevent privilege escalation and search path injection attacks:
    revoke all on all tables in schema public from anon;
    revoke all on all tables in schema public from authenticated;
    -- Grant only necessary capabilities to authenticated
+   grant select, insert on public.incidents to authenticated;
+   grant select, insert on public.cleanup_evidence to authenticated;
+   grant select, insert on public.verification_decisions to authenticated;
+   ```
+3. **Trigger Functions**:
+   Trigger functions (`handle_new_user`, `validate_verification_decision`, etc.) have their `EXECUTE` privileges revoked from `public` to ensure they can only be invoked by internal database triggers.
+
+---
+
+## 🪣 Private Storage Bucket Policies
+
+SafaiOS defines two dedicated private storage buckets:
+1. **`incident-media`**: Contains citizen report photographs.
+2. **`cleanup-evidence`**: Contains sanitary driver cleanup photographs.
+
+### Storage RLS Rules
+- **Upload Scoping**: Uploads require that the top-level folder name matches the authenticated user's ID:
+  ```sql
+  (storage.foldername(name))[1] = (select auth.uid())::text
+  ```
+- **Driver Role Gate**: Uploads into `cleanup-evidence` strictly require that the user holds an active `DRIVER` role.
+- **Incident Read Authorization**: Storage object reads are granted only if the caller is the object owner, an authorized municipal admin, or an authorized participant via `can_view_incident`.
+
+---
+
+<div align="center">
+
+[← Previous: Computer Vision & YOLO11s](Computer-Vision-and-YOLO11s) | [Next: Incident Lifecycle & Verification →](Incident-Lifecycle-and-Verification)
+
+</div>
+
