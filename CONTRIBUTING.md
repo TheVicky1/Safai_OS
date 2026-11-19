@@ -39,3 +39,45 @@ If you are looking for an issue to start with, pick one of our approved micro-is
 ---
 
 ## Development Workflow
+
+### 1. Fork and Clone
+```bash
+git clone https://github.com/<your-username>/Safai_OS.git
+cd Safai_OS
+```
+
+### 2. Create a Feature Branch
+```bash
+git checkout -b feature/your-feature-name
+```
+
+### 3. Install Dependencies
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .\.venv\Scripts\Activate.ps1
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+pip install -e ".[dev]"
+```
+
+### 4. Run Tests Locally
+```bash
+pytest tests/ -v
+```
+All 151 unit tests must pass before opening a pull request.
+
+### 5. Verify Security and Links
+```bash
+node scratch/secret-scan.mjs
+node scratch/check-links.mjs
+```
+
+### 6. Submit Your Pull Request
+- Target the `main` branch.
+- Fill out the PR template completely.
+- Ensure linear history (no merge commits; rebase onto `main` if needed).
+- Our CI pipeline will execute the required status checks:
+  - `Quality Gates & Verification (20.x)`
+  - `Dependency Health & Vulnerability Scan (20.x)`
+
+Maintainers review PRs within 48 hours. Thank you for contributing to open civic technology!
+
