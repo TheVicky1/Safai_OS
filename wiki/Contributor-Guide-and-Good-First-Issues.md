@@ -77,3 +77,38 @@ git push origin fix/issue-14-bounding-box-doc
 ```
 Then visit GitHub and click **Compare & pull request**! Link your issue in the description (e.g., `Closes #14`).
 
+---
+
+## 🎯 Curated Good First Issues Catalog
+
+Below are example self-contained micro-contributions ideal for first-time contributors:
+
+| Issue ID | Area | Target File | Scope of Work | Difficulty |
+| :---: | :--- | :--- | :--- | :---: |
+| **GFI-01** | Documentation | `docs/API.md` | Add JSON schema example for `/api/v1/detect` with 5 sample output boxes. | Easy (15 min) |
+| **GFI-02** | Test Utilities | `tests/test_detection_boxes.py` | Add unit test verifying that bounding boxes with zero width raise a clean ValueError. | Easy (20 min) |
+| **GFI-03** | Python Package | `src/safaios/utils.py` | Add a helper function `format_confidence_percentage(conf: float) -> str`. | Easy (15 min) |
+| **GFI-04** | Documentation | `docs/DEPLOYMENT.md` | Add hardware requirement table comparing Raspberry Pi 5 vs Jetson Orin Nano. | Easy (20 min) |
+| **GFI-05** | Python Logging | `src/safaios/logger.py` | Add ISO-8601 UTC timestamp formatting in standard JSON log output. | Easy (25 min) |
+| **GFI-06** | Test Coverage | `tests/test_dataset_validator.py`| Add test asserting invalid class IDs (> 4) trigger immediate rejection. | Easy (20 min) |
+| **GFI-07** | Documentation | `docs/ARCHITECTURE.md` | Add latency benchmark comparison table across CPU vs GPU vs TensorRT. | Easy (25 min) |
+| **GFI-08** | SQL / Database | `supabase/tests/` | Add pgTAP test asserting notification read timestamps cannot be set in the future. | Medium (35 min) |
+
+---
+
+## 🤝 Community Guidelines & Code of Conduct
+
+SafaiOS is committed to providing a welcoming, inclusive, and harassment-free environment for everyone. All contributors and participants are expected to adhere to our [Code of Conduct](https://github.com/TheVicky1/Safai_OS/blob/main/CODE_OF_CONDUCT.md).
+
+### Need Help?
+- 💬 **Ask in Discussions**: Have questions or need guidance? Open a thread on [GitHub Discussions](https://github.com/TheVicky1/Safai_OS/discussions).
+- 🏷️ **Labels**: Check our issue labels to find tasks matching your skillset (`good first issue`, `documentation`, `python`, `computer-vision`, `sql`).
+
+---
+
+<div align="center">
+
+[← Previous: Safai Coins & Civic Ledger](Safai-Coins-and-Civic-Ledger) | [Next: Local Development & Setup →](Local-Development-and-Environment-Setup)
+
+</div>
+
