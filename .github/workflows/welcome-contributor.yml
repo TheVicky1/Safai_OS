@@ -1,0 +1,60 @@
+name: Welcome Contributor
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+    - name: Welcome new contributors
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const isPR = !!context.payload.pull_request;
+          const author = isPR ? context.payload.pull_request.user.login : context.payload.issue.user.login;
+          const senderType = isPR ? context.payload.pull_request.user.type : context.payload.issue.user.type;
+
+          // Avoid replying to bots
+          if (senderType === 'Bot') return;
+
+          let message = '';
+          if (isPR) {
+            message = `### Welcome to SafaiOS, @${author}! 👋🌱\n\n` +
+              `Thank you for opening a pull request to improve municipal waste management and civic technology!\n\n` +
+              `#### Quick Pre-Merge Reminders:\n` +
+              `- **Quality Gates**: Ensure that our required checks \`Quality Gates & Verification (20.x)\` and \`Dependency Health & Vulnerability Scan (20.x)\` complete successfully.\n` +
+              `- **Linear History**: Our repository enforces linear history. Please keep your commits rebased and clean.\n` +
+              `- **Testing**: You can test locally with \`pytest tests/ -v\` (Python ML suite) and \`supabase test db\` (pgTAP database suite).\n` +
+              `- **Documentation**: Check out our [SafaiOS Wiki](https://github.com/${context.repo.owner}/${context.repo.repo}/wiki) and [Contributor Guide](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/CONTRIBUTING.md).\n\n` +
+              `A maintainer will review your contribution within 48 hours. Thank you for building cleaner cities with us!`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: message
+            });
+          } else {
+            message = `### Welcome to SafaiOS, @${author}! 👋🌱\n\n` +
+              `Thank you for opening an issue. Your feedback helps make municipal waste detection and routing more reliable.\n\n` +
+              `- If reporting a bug, please include Python/OS versions and reproduction steps.\n` +
+              `- If proposing a new feature or dataset expansion, please review our [Architecture Wiki](https://github.com/${context.repo.owner}/${context.repo.repo}/wiki/System-Architecture).\n` +
+              `- For general questions, feel free to join [GitHub Discussions](https://github.com/${context.repo.owner}/${context.repo.repo}/discussions).\n\n` +
+              `A maintainer will triage this issue shortly!`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: message
+            });
+          }
+
