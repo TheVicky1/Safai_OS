@@ -57,3 +57,14 @@ jobs:
     - name: Validate Supabase migrations and database policies locally
       run: |
         supabase start
+        supabase db reset
+        supabase test db
+        supabase db lint --level error --fail-on error
+
+    - name: Run repository secret and credential scan
+      run: |
+        node scripts/secret-scan.mjs
+
+    - name: Run documentation link verification
+      run: |
+        node scripts/check-links.mjs
