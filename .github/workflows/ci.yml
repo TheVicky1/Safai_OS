@@ -45,6 +45,7 @@ jobs:
         python -m pip install --upgrade pip
         # Install CPU PyTorch wheel to prevent large CUDA downloads
         pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        pip install --no-cache-dir -r requirements.txt
         pip install --no-cache-dir -e ".[dev]"
 
     - name: Execute Python ML and Core test suite (151 tests)
@@ -53,6 +54,8 @@ jobs:
 
     - name: Set up Supabase CLI
       uses: supabase/setup-cli@v1
+      with:
+        version: latest
 
     - name: Validate Supabase migrations and database policies locally
       run: |

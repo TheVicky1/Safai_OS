@@ -52,7 +52,8 @@ models/checkpoints/*
 !models/checkpoints/.gitkeep
 models/exports/*
 !models/exports/.gitkeep
-runs/
+runs/*
+!runs/detect/runs/detect/runs/safaios/safaios_yolo11s_v10k_img768/args.yaml
 *.pt
 *.onnx
 *.engine
