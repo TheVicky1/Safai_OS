@@ -66,6 +66,7 @@ jobs:
 
     - name: Run repository secret and credential scan
       run: |
+        node scripts/test-secret-scan.mjs
         node scripts/secret-scan.mjs
 
     - name: Run documentation link verification

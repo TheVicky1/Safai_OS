@@ -11,8 +11,8 @@ This guide documents solutions for known installation errors, container environm
 | **Docker / WSL** | `npipe:////./pipe/dockerDesktopLinuxEngine` connection error | Enable Virtual Machine Platform in Windows or use Linux/Codespaces |
 | **Python** | Huge (>12GB) CUDA download during torch install | Install CPU-only PyTorch wheel with index-url parameter |
 | **PowerShell** | `cannot be loaded because running scripts is disabled` | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` |
-| **Supabase** | `Port 54322 already in use` | Stop conflicting Docker containers: `docker rm -f $(docker ps -aq)` |
-| **Git / PR** | Rejection: `Merge commits are prohibited on main` | Rebase branch against main: `git rebase origin/main` |
+| **Supabase** | `Port 54322 already in use` | Stop conflicting container: `docker stop $(docker ps -q --filter publish=54322)` |
+| **Git / PR** | Rejection: `Merge commits are prohibited on main` | Rebase onto upstream main: `git fetch upstream && git rebase upstream/main` |
 | **GitHub CI** | Missing check `Quality Gates & Verification (20.x)` | Ensure PR targets `main` and test scripts pass locally |
 
 ---
@@ -135,13 +135,13 @@ If local PostgreSQL or another container is occupying ports required by Supabase
    ```bash
    supabase stop
    ```
-2. Check for lingering Docker containers:
+2. Identify containers binding the conflicting port:
    ```bash
-   docker ps
+   docker ps --filter "publish=54322"
    ```
-3. Remove conflicting containers if necessary:
+3. Stop only the specific conflicting container (avoid stopping unrelated containers):
    ```bash
-   docker stop $(docker ps -q --filter ancestor=supabase/postgres)
+   docker stop $(docker ps -q --filter publish=54322)
    ```
 4. Restart Supabase:
    ```bash
@@ -166,11 +166,13 @@ SafaiOS enforces branch protection on `main` to preserve code quality and linear
 ### Error: `Merge commits are prohibited on main`
 The ruleset requires linear history. Merge commits created with `git merge` will be rejected by GitHub when pushed.
 
-**Fix**: Rebase your feature branch against the latest `main`:
+**Fix**: Rebase your feature branch against the project upstream `main`:
 ```bash
 git checkout feature/my-feature
-git fetch origin
-git rebase origin/main
+# Configure upstream remote if not already added
+git remote add upstream https://github.com/TheVicky1/Safai_OS.git 2>/dev/null || true
+git fetch upstream
+git rebase upstream/main
 git push --force-with-lease origin feature/my-feature
 ```
 
