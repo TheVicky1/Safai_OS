@@ -15,6 +15,13 @@ SafaiOS uses GitHub Actions to enforce rigorous testing, architectural complianc
 - **Concurrency**: Automatically cancels in-flight redundant runs on branch updates (`cancel-in-progress: true`).
 - **Security**: Runs in isolated runner environments with least-privilege permissions. Zero external secret access is required for local test execution.
 
+### 1.1 Concurrency and Matrix Strategy
+
+To conserve compute runner minutes and accelerate feedback cycles for contributors, SafaiOS workflows implement intelligent concurrency controls and matrix strategies:
+
+- **Concurrency Group**: Configured via `group: ${{ github.workflow }}-${{ github.ref }}` with `cancel-in-progress: true`. When new commits are pushed to an existing pull request or branch, GitHub Actions automatically identifies active runs within the same workflow and reference group and cancels any obsolete in-progress jobs immediately. This prevents runner queue congestion and ensures CI resources focus exclusively on the latest code change.
+- **Strategy Matrix**: The primary quality gate jobs use a matrix strategy with `node-version: [20.x]`. This pins execution to the verified Node.js 20 LTS runtime for JavaScript tools (including secret scanning and link validation scripts), providing deterministic test results while preserving the flexibility to scale test coverage across multiple Node releases in the future without modifying core job definitions.
+
 ---
 
 ## 2. The 7 Automated Quality Gates
