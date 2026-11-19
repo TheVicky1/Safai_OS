@@ -167,3 +167,76 @@ Supabase CLI includes an automated linter based on `splinter` that scans databas
 - Unindexed foreign keys.
 - Permissive RLS policies (e.g. `USING (true)` on write operations).
 - Insecure `SECURITY DEFINER` functions with missing `search_path`.
+
+Run the database linter locally:
+
+```bash
+supabase db lint --level error --fail-on error
+```
+
+If no errors are found, the command exits with return code `0`.
+
+---
+
+## 4. Secret Scanning and Link Checking
+
+SafaiOS enforces pre-merge automated security scans to guarantee that no API keys, private tokens, or broken documentation links enter the repository.
+
+### Running Secret Scan Locally
+
+```bash
+node scratch/secret-scan.mjs
+```
+
+This script scans all staged and tracked repository files for patterns matching:
+- Supabase Service Role keys.
+- Hugging Face / Roboflow API tokens.
+- AWS / GCP cloud credentials.
+- Private SSH / PGP keys.
+- Database connection strings with plaintext passwords.
+
+### Running Documentation Link Check
+
+```bash
+node scratch/check-links.mjs
+```
+
+This utility verifies all relative markdown links across the `wiki/`, `docs/`, and root documentation files to ensure no dead links or 404 anchors exist.
+
+---
+
+## 5. GitHub Actions Quality Gates and Branch Ruleset
+
+SafaiOS protects the `main` branch with a GitHub Ruleset named **`Protect Main`**. To merge any pull request, two specific status checks must pass:
+
+1. **`Quality Gates & Verification (20.x)`**
+   - Runs full Python ML test suite (151 tests) on Ubuntu.
+   - Spins up local Supabase CLI, applies all migrations, runs all 24 pgTAP tests, and executes database linting.
+   - Executes `node scratch/secret-scan.mjs` and `node scratch/check-links.mjs`.
+2. **`Dependency Health & Vulnerability Scan (20.x)`**
+   - Scans Python requirements using `pip-audit`.
+   - Audits Node packages for high-severity CVEs.
+   - Confirms that pinned dependencies have no known vulnerabilities.
+
+### Ruleset Constraints
+
+- **Linear History Required**: Merge commits are blocked. Contributors must squash or rebase commits cleanly.
+- **Pull Request Required**: Direct pushes to `main` are disabled. All changes require an approved Pull Request.
+- **Dismiss Stale Approvals**: Pushing new commits to an open PR invalidates previous reviews, requiring re-review.
+- **Squash Merge**: All PRs are merged via Squash and Merge to keep a clean, atomic Git history.
+- **Conversation Resolution**: All open discussion threads on code review must be resolved prior to merge.
+
+---
+
+## 6. Pre-Submission Contributor Checklist
+
+Before pushing your branch and opening a pull request, verify each of the following:
+
+- [ ] Python unit tests pass: `pytest tests/ -v` (151/151 passed).
+- [ ] No temporary checkpoints or virtual environments are staged (`git status`).
+- [ ] Code formatted according to standard conventions.
+- [ ] Secret scan passes: `node scratch/secret-scan.mjs`.
+- [ ] Link check passes: `node scratch/check-links.mjs`.
+- [ ] Commit history is clean and rebased against latest `upstream/main`.
+- [ ] Documentation updated in `wiki/` if functionality changed.
+
