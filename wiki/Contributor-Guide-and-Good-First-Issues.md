@@ -37,3 +37,43 @@ Leave a short comment on the issue (e.g., *"I'd like to work on this issue! Plea
 ### 3. Fork & Clone
 Fork the repository to your own GitHub account and clone it to your local machine:
 ```bash
+git clone https://github.com/<your-username>/Safai_OS.git
+cd Safai_OS
+```
+
+### 4. Create a Clean Feature Branch
+Create a descriptive branch pointing to your issue:
+```bash
+git checkout -b fix/issue-14-bounding-box-doc
+```
+
+### 5. Set Up Local Environment & Run Tests
+Set up your virtual environment and verify existing tests:
+```bash
+python -m venv .venv
+# Windows (PowerShell):
+.\.venv\Scripts\Activate.ps1
+# Linux / macOS:
+source .venv/bin/activate
+
+pip install -e ".[dev]"
+pytest tests/ -v
+```
+
+### 6. Make Your Changes
+Make the minimal, clean code or documentation edits required by your issue.
+
+### 7. Verify Local Quality Gates
+Ensure the test suite passes with zero regressions:
+```bash
+pytest tests/ -v
+```
+
+### 8. Commit & Open Your Pull Request
+Commit your changes using Conventional Commits and push to your fork:
+```bash
+git commit -m "docs(taxonomy): clarify glass bottle container boundary examples"
+git push origin fix/issue-14-bounding-box-doc
+```
+Then visit GitHub and click **Compare & pull request**! Link your issue in the description (e.g., `Closes #14`).
+
