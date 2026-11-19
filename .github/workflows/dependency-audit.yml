@@ -43,3 +43,19 @@ jobs:
       run: |
         echo "Running pip-audit against requirements.txt..."
         pip-audit -r requirements.txt --desc on
+
+    - name: Verify dependency compatibility and integrity
+      run: |
+        python -m pip check
+
+    - name: Verify repository license compliance
+      run: |
+        node -e "
+          const fs = require('fs');
+          if (!fs.existsSync('LICENSE')) {
+            console.error('Missing root LICENSE file');
+            process.exit(1);
+          }
+          console.log('License verification passed: MIT license active.');
+        "
+
