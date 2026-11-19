@@ -107,3 +107,112 @@ python -c "import safai; print(safai.__file__)"
 
 ---
 
+## 3. Supabase Local Stack and Database
+
+### Issue: `supabase: command not found`
+Install the official Supabase CLI:
+
+- **Via npm** (cross-platform):
+  ```bash
+  npm install -g supabase
+  ```
+- **Via Scoop** (Windows):
+  ```powershell
+  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+  scoop install supabase
+  ```
+- **Via Homebrew** (macOS / Linux):
+  ```bash
+  brew install supabase/tap/supabase
+  ```
+
+---
+
+### Issue: Port Conflicts (e.g. Port 54322 or 54321 Already in Use)
+If local PostgreSQL or another container is occupying ports required by Supabase:
+
+1. Stop existing Supabase instances:
+   ```bash
+   supabase stop
+   ```
+2. Check for lingering Docker containers:
+   ```bash
+   docker ps
+   ```
+3. Remove conflicting containers if necessary:
+   ```bash
+   docker stop $(docker ps -q --filter ancestor=supabase/postgres)
+   ```
+4. Restart Supabase:
+   ```bash
+   supabase start
+   ```
+
+---
+
+### Issue: Migration Syntax or Constraint Errors
+If you modify `supabase/migrations/` and receive a PostgreSQL error during `supabase db reset`:
+- Check the terminal output for the exact line number and SQL statement.
+- Ensure all custom functions define `set search_path = public, extensions`.
+- Confirm all `grant select, insert, update` statements include the target role (e.g. `to authenticated;`).
+- Validate table constraints before applying them.
+
+---
+
+## 4. Git and Branch Protection Ruleset (`Protect Main`)
+
+SafaiOS enforces branch protection on `main` to preserve code quality and linear history.
+
+### Error: `Merge commits are prohibited on main`
+The ruleset requires linear history. Merge commits created with `git merge` will be rejected by GitHub when pushed.
+
+**Fix**: Rebase your feature branch against the latest `main`:
+```bash
+git checkout feature/my-feature
+git fetch origin
+git rebase origin/main
+git push --force-with-lease origin feature/my-feature
+```
+
+---
+
+### Error: Status Checks Pending or Not Found
+The branch ruleset requires two checks to pass:
+1. `Quality Gates & Verification (20.x)`
+2. `Dependency Health & Vulnerability Scan (20.x)`
+
+If your PR shows checks pending or missing:
+- Verify that your PR is opened against the `main` branch.
+- Check the **Actions** tab on GitHub to see if a workflow failed.
+- Confirm that your branch contains the latest `.github/workflows/` definitions.
+
+---
+
+### Error: Conversation Resolution Required
+GitHub blocks merging if there are unresolved comments from code reviews.
+- Navigate to the **Files changed** tab on your PR.
+- Address each reviewer comment.
+- Click **Resolve conversation** for every thread.
+
+---
+
+## 5. Frequently Asked Questions (FAQ)
+
+### Q: Do I need a physical GPU to contribute to SafaiOS?
+**A**: No. All 151 unit tests and inference verification routines are designed to run cleanly on CPU. SafaiOS automatically falls back to CPU tensor operations when CUDA or Apple MPS hardware is absent.
+
+### Q: What is the recommended pull request workflow?
+1. Fork `TheVicky1/Safai_OS` on GitHub.
+2. Clone your fork locally and create a descriptive branch: `git checkout -b fix/issue-title`.
+3. Make atomic, well-documented changes.
+4. Run tests: `pytest tests/ -v` (151 passing).
+5. Run secret scan: `node scratch/secret-scan.mjs`.
+6. Push to your fork and submit a PR to `main`.
+7. Once approved and checks pass, the maintainers will squash-merge your PR.
+
+### Q: How can I suggest a new waste category or dataset expansion?
+Open an issue using the **Dataset Expansion Proposal** template or start a thread in GitHub Discussions under the **Computer Vision & Datasets** category. Provide details on class definition, visual characteristics in urban environments, and potential confusion with existing classes.
+
+### Q: Who can I contact for urgent security vulnerabilities?
+Please do not open public issues for security vulnerabilities. Follow the instructions in `SECURITY.md` or contact the core maintainers directly.
+
