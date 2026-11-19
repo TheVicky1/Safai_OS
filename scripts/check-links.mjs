@@ -52,3 +52,58 @@ for (const filePath of files) {
   let match;
 
   while ((match = linkRegex.exec(content)) !== null) {
+    const rawTarget = match[2].trim();
+
+    // Skip web URLs and mailto
+    if (
+      rawTarget.startsWith('http://') ||
+      rawTarget.startsWith('https://') ||
+      rawTarget.startsWith('mailto:') ||
+      rawTarget.startsWith('ftp://')
+    ) {
+      continue;
+    }
+
+    // Skip standalone hash anchors
+    if (rawTarget.startsWith('#')) {
+      continue;
+    }
+
+    const [targetPath] = rawTarget.split('#');
+    if (!targetPath) continue;
+
+    // Direct path relative to current markdown file
+    const resolvedPath = path.resolve(fileDir, targetPath);
+
+    // If inside wiki, also check target as a wiki page name (e.g. "Home" -> "wiki/Home.md")
+    let exists = fs.existsSync(resolvedPath);
+    if (!exists && isWikiFile) {
+      const wikiSibling = path.resolve(fileDir, `${targetPath}.md`);
+      if (fs.existsSync(wikiSibling)) {
+        exists = true;
+      }
+    }
+
+    // Also check relative to workspace root
+    if (!exists) {
+      const rootRelative = path.resolve(process.cwd(), targetPath);
+      if (fs.existsSync(rootRelative)) {
+        exists = true;
+      }
+    }
+
+    if (!exists) {
+      console.error(`[BROKEN LINK] in ${path.relative(process.cwd(), filePath)}: target "${rawTarget}" not found.`);
+      brokenCount++;
+    }
+  }
+}
+
+if (brokenCount > 0) {
+  console.error(`\nLink verification failed: ${brokenCount} broken link(s) found.`);
+  process.exit(1);
+} else {
+  console.log(`Link verification passed: All markdown references valid (${files.length} documents audited).`);
+  process.exit(0);
+}
+
