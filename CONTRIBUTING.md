@@ -1,0 +1,41 @@
+# Contributing to SafaiOS
+
+Thank you for your interest in contributing to **SafaiOS**! SafaiOS is an open-source, edge-native municipal operating system that combines computer vision (YOLO11s), real-time citizen reporting, automated driver dispatching, and verifiable civic rewards.
+
+Whether you are improving ML inference pipelines, writing Postgres RLS security policies, adding UI components, or improving documentation, your contributions help build cleaner and more sustainable cities.
+
+---
+
+## Code of Conduct
+
+By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). Please treat all contributors with respect, empathy, and professional courtesy.
+
+---
+
+## Getting Started
+
+1. **Read the Contributor Guide in our Wiki**:
+   Visit our [Contributor Guide and Good First Issues](wiki/Contributor-Guide-and-Good-First-Issues.md) for a complete breakdown of current micro-tasks, good first issues (GFI-01 through GFI-08), development environment setup, and review SLAs.
+2. **Setup Local Environment**:
+   Follow the [Local Development and Environment Setup](wiki/Local-Development-and-Environment-Setup.md) runbook for your platform (Windows, macOS, Linux).
+3. **Understand Quality Gates**:
+   Review [Testing and Quality Gates](wiki/Testing-and-Quality-Gates.md) to understand the automated checks run against every pull request.
+
+---
+
+## Micro-Contribution Matrix (Good First Issues)
+
+If you are looking for an issue to start with, pick one of our approved micro-issues:
+
+- **GFI-01**: Benchmark and profile YOLO11s inference under varied batch sizes.
+- **GFI-02**: Add Roboflow format validation helpers for new polygon bounding boxes.
+- **GFI-03**: Implement class-wise IoU threshold sliders in documentation.
+- **GFI-04**: Write additional pgTAP tests for municipal route scheduling policies.
+- **GFI-05**: Enhance CSV and JSON report exports for municipal audit analytics.
+- **GFI-06**: Add synthetic noise models for nighttime low-light detection testing.
+- **GFI-07**: Expand end-to-end Pydantic validation tests for driver location streams.
+- **GFI-08**: Audit and translate civic reporting documentation into regional Indian languages.
+
+---
+
+## Development Workflow
