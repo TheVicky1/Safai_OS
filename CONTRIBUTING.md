@@ -67,8 +67,8 @@ All 151 unit tests must pass before opening a pull request.
 
 ### 5. Verify Security and Links
 ```bash
-node scratch/secret-scan.mjs
-node scratch/check-links.mjs
+node scripts/secret-scan.mjs
+node scripts/check-links.mjs
 ```
 
 ### 6. Submit Your Pull Request

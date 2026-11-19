@@ -185,7 +185,7 @@ SafaiOS enforces pre-merge automated security scans to guarantee that no API key
 ### Running Secret Scan Locally
 
 ```bash
-node scratch/secret-scan.mjs
+node scripts/secret-scan.mjs
 ```
 
 This script scans all staged and tracked repository files for patterns matching:
@@ -198,7 +198,7 @@ This script scans all staged and tracked repository files for patterns matching:
 ### Running Documentation Link Check
 
 ```bash
-node scratch/check-links.mjs
+node scripts/check-links.mjs
 ```
 
 This utility verifies all relative markdown links across the `wiki/`, `docs/`, and root documentation files to ensure no dead links or 404 anchors exist.
@@ -212,7 +212,7 @@ SafaiOS protects the `main` branch with a GitHub Ruleset named **`Protect Main`*
 1. **`Quality Gates & Verification (20.x)`**
    - Runs full Python ML test suite (151 tests) on Ubuntu.
    - Spins up local Supabase CLI, applies all migrations, runs all 24 pgTAP tests, and executes database linting.
-   - Executes `node scratch/secret-scan.mjs` and `node scratch/check-links.mjs`.
+   - Executes `node scripts/secret-scan.mjs` and `node scripts/check-links.mjs`.
 2. **`Dependency Health & Vulnerability Scan (20.x)`**
    - Scans Python requirements using `pip-audit`.
    - Audits Node packages for high-severity CVEs.
@@ -235,8 +235,8 @@ Before pushing your branch and opening a pull request, verify each of the follow
 - [ ] Python unit tests pass: `pytest tests/ -v` (151/151 passed).
 - [ ] No temporary checkpoints or virtual environments are staged (`git status`).
 - [ ] Code formatted according to standard conventions.
-- [ ] Secret scan passes: `node scratch/secret-scan.mjs`.
-- [ ] Link check passes: `node scratch/check-links.mjs`.
+- [ ] Secret scan passes: `node scripts/secret-scan.mjs`.
+- [ ] Link check passes: `node scripts/check-links.mjs`.
 - [ ] Commit history is clean and rebased against latest `upstream/main`.
 - [ ] Documentation updated in `wiki/` if functionality changed.
 
