@@ -129,21 +129,42 @@ Install the official Supabase CLI:
 ---
 
 ### Issue: Port Conflicts (e.g. Port 54322 or 54321 Already in Use)
-If local PostgreSQL or another container is occupying ports required by Supabase:
+If local PostgreSQL or another container is occupying ports required by Supabase (such as port 54322 for PostgreSQL or 54321 for the API gateway):
 
-1. Stop existing Supabase instances:
+1. **Stop existing Supabase instances**:
    ```bash
    supabase stop
    ```
-2. Identify containers binding the conflicting port:
+
+2. **Identify and stop conflicting Docker containers**:
+   Substitute the specific conflicting port (e.g. `54322` or `54321`):
    ```bash
-   docker ps --filter "publish=54322"
+   docker ps --filter "publish=<PORT>"
    ```
-3. Stop only the specific conflicting container (avoid stopping unrelated containers):
+   Stop only the specific container binding that port (avoid stopping unrelated containers):
    ```bash
-   docker stop $(docker ps -q --filter publish=54322)
+   docker stop $(docker ps -q --filter publish=<PORT>)
    ```
-4. Restart Supabase:
+
+3. **Check for host-level services (Host PostgreSQL / system processes)**:
+   If Docker reports no containers binding the port, a host service (such as native PostgreSQL or pgAdmin) may be running:
+   - On Windows (PowerShell):
+     ```powershell
+     Get-NetTCPConnection -LocalPort <PORT> -ErrorAction SilentlyContinue | Select-Object OwningProcess
+     Get-Process -Id <PID>
+     # Stop host PostgreSQL service if appropriate
+     Stop-Service postgresql* -ErrorAction SilentlyContinue
+     ```
+   - On Linux / macOS:
+     ```bash
+     sudo lsof -i :<PORT>
+     sudo systemctl stop postgresql
+     ```
+
+4. **Alternative: Adjust the configured Supabase port**:
+   If the conflicting host service cannot be terminated, update `supabase/config.toml` to bind an alternate port (for example under `[db]` set `port = 54325`).
+
+5. **Restart Supabase**:
    ```bash
    supabase start
    ```

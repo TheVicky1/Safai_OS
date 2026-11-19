@@ -33,55 +33,106 @@ const BINARY_EXTENSIONS = new Set([
 ]);
 
 export const SECRET_PATTERNS = [
-  { name: 'AWS Access Key', regex: /AKIA[0-9A-Z]{16}/ },
-  { name: 'Private Key Block', regex: /-----BEGIN (?:(?:RSA|EC|DSA|OPENSSH|ENCRYPTED|PGP) )?PRIVATE KEY(?: BLOCK)?-----/ },
-  { name: 'GitHub Personal Token', regex: /gh[pous]_[A-Za-z0-9_]{36,255}/ },
-  { name: 'Slack Token', regex: /xox[baprs]-[0-9a-zA-Z]{10,48}/ },
-  { name: 'Google API Key', regex: /AIzaSy[0-9A-Za-z_-]{33}/ },
-  { name: 'Supabase Service Role Key', regex: /(?:SUPABASE_SERVICE_ROLE_KEY|SERVICE_ROLE_KEY)\s*[:=]\s*["']?([A-Za-z0-9_\-\.]{30,})["']?/i },
-  { name: 'Supabase Personal Access Token', regex: /sbp_[a-zA-Z0-9]{40}/ },
-  { name: 'Hugging Face Token', regex: /hf_[A-Za-z0-9]{34,}/ },
-  { name: 'Roboflow Token', regex: /rf_[A-Za-z0-9]{32,}|(?:ROBOFLOW_API_KEY|ROBOFLOW_KEY)\s*[:=]\s*["']?([A-Za-z0-9]{20,})["']?/i },
-  { name: 'Database Connection String', regex: /(?:postgres|postgresql):\/\/[^:\s'"]+:([^@\s'"]+)@[^/\s'"]+\/[^\s'"]+/i },
-  { name: 'Generic Secret Token', regex: /(?:secret|password|bearer|api[_-]?key)\s*[:=]\s*["']([A-Za-z0-9\-_]{32,})["']/i }
+  { name: 'AWS Access Key', regex: /AKIA[0-9A-Z]{16}/g },
+  { name: 'Private Key Block', regex: /-----BEGIN (?:(?:RSA|EC|DSA|OPENSSH|ENCRYPTED|PGP) )?PRIVATE KEY(?: BLOCK)?-----/g },
+  { name: 'GitHub Personal Token', regex: /gh[pous]_[A-Za-z0-9_]{36,255}/g },
+  { name: 'Slack Token', regex: /xox[baprs]-[0-9a-zA-Z]{10,48}/g },
+  { name: 'Google API Key', regex: /AIzaSy[0-9A-Za-z_-]{33}/g },
+  { name: 'Supabase Service Role Key', regex: /(?:SUPABASE_SERVICE_ROLE_KEY|SERVICE_ROLE_KEY)\s*[:=]\s*["']?([A-Za-z0-9_\-\.]{30,})["']?/gi },
+  { name: 'Supabase Personal Access Token', regex: /sbp_[a-zA-Z0-9]{40}/g },
+  { name: 'Hugging Face Token', regex: /hf_[A-Za-z0-9]{34,}/g },
+  { name: 'Roboflow Token', regex: /rf_[A-Za-z0-9]{32,}|(?:ROBOFLOW_API_KEY|ROBOFLOW_KEY)\s*[:=]\s*["']?([A-Za-z0-9]{20,})["']?/gi },
+  { name: 'Database Connection String', regex: /(?:postgres|postgresql):\/\/[^:\s'"]+:([^@\s'"]+)@([^/:\s'"]+)(?::\d+)?\/[^\s'"]*/gi },
+  { name: 'Generic Secret Token', regex: /(?:secret|password|bearer|api[_-]?key)\s*[:=]\s*["']([A-Za-z0-9\-_]{32,})["']/gi }
 ];
 
-export const ALLOWLIST_VALUES = new Set([
+export const EXPLICIT_PLACEHOLDERS = new Set([
   'your-super-secret-service-role-key-here',
   'your-anon-public-key-here',
   'your_supabase_project_url_here',
   'postgres_password_here',
-  'password',
   '[password]',
   '<password>',
-  'your-password',
-  'your_password',
-  'postgres',
   '***redacted_uri_password***'
+]);
+
+export const LOCAL_HOSTS = new Set([
+  'localhost',
+  '127.0.0.1',
+  '0.0.0.0',
+  '::1',
+  '[::1]'
+]);
+
+export const DEV_DEFAULT_PASSWORDS = new Set([
+  'postgres',
+  'password',
+  'your-password',
+  'your_password'
 ]);
 
 export function isAllowlisted(captured) {
   if (!captured) return false;
   const lower = captured.toLowerCase().trim();
-  if (ALLOWLIST_VALUES.has(lower)) return true;
+  if (EXPLICIT_PLACEHOLDERS.has(lower)) return true;
   // Template placeholders: ${VAR}, <placeholder>, [placeholder], ***
   if (/^(\$\{[^}]+\}|<[^>]+>|\[[^\]]+\]|\*{3,})$/.test(lower)) return true;
   return false;
 }
 
-export function scanLine(line) {
-  const matches = [];
+export function isDatabaseConnectionAllowed(password, host) {
+  const lowerPass = (password || '').toLowerCase().trim();
+  const lowerHost = (host || '').toLowerCase().trim();
+
+  // 1. Explicit placeholder or template is allowed anywhere
+  if (isAllowlisted(lowerPass)) return true;
+
+  // 2. Development default passwords are only allowed for local targets
+  if (DEV_DEFAULT_PASSWORDS.has(lowerPass)) {
+    return LOCAL_HOSTS.has(lowerHost);
+  }
+
+  return false;
+}
+
+export function getLineNumber(content, index) {
+  return content.slice(0, index).split('\n').length;
+}
+
+export function scanContent(content, filePath = '') {
+  const violations = [];
   for (const pattern of SECRET_PATTERNS) {
-    const match = pattern.regex.exec(line);
-    if (match) {
-      const captured = match[1] || match[0];
-      if (isAllowlisted(captured)) {
-        continue;
+    const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      if (pattern.name === 'Database Connection String') {
+        const password = match[1];
+        const host = match[2];
+        if (isDatabaseConnectionAllowed(password, host)) {
+          continue;
+        }
+      } else {
+        const captured = match[1] || match[0];
+        if (isAllowlisted(captured)) {
+          continue;
+        }
       }
-      matches.push({ name: pattern.name, match: match[0], captured });
+
+      const lineNumber = getLineNumber(content, match.index);
+      violations.push({
+        name: pattern.name,
+        filePath,
+        lineNumber,
+        match: match[0],
+        captured: match[1] || match[0]
+      });
     }
   }
-  return matches;
+  return violations;
+}
+
+export function scanLine(line) {
+  return scanContent(line);
 }
 
 export function walk(dir, results = []) {
@@ -113,14 +164,11 @@ export function scanRepository(rootDir = process.cwd()) {
       continue;
     }
 
-    const lines = content.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const matches = scanLine(line);
-      for (const match of matches) {
-        console.error(`[SECRET SCAN VIOLATION] ${match.name} found in ${path.relative(rootDir, file)}:${i + 1}`);
-        violations++;
-      }
+    const relPath = path.relative(rootDir, file);
+    const foundViolations = scanContent(content, relPath);
+    for (const v of foundViolations) {
+      console.error(`[SECRET SCAN VIOLATION] ${v.name} found in ${v.filePath}:${v.lineNumber}`);
+      violations++;
     }
   }
 
