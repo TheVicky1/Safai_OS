@@ -145,3 +145,4 @@ for (const fixture of ACCEPTANCE_FIXTURES) {
 console.log(`[PASS] Verified ${acceptedCount}/${ACCEPTANCE_FIXTURES.length} documented placeholder acceptances.`);
 
 console.log('\nAll secret scanner fixture tests passed successfully!');
+

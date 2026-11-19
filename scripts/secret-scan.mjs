@@ -15,7 +15,9 @@ const IGNORED_DIRS = new Set([
   'data',
   'weights',
   'runs',
-  'reports'
+  'reports',
+  '.temp',
+  '.branches'
 ]);
 
 const IGNORED_FILES = new Set([
