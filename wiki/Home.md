@@ -41,3 +41,47 @@ Navigate the complete SafaiOS technical and operational documentation below:
 5. [**Incident Lifecycle & Verification**](Incident-Lifecycle-and-Verification) - State machine transitions, proof-of-work evidence, and anti-fraud enforcement.
 6. [**Safai Coins & Civic Ledger**](Safai-Coins-and-Civic-Ledger) - Idempotent reward transaction architecture and municipal utility redemption.
 
+### 🛠️ Developer & Contributor Hub
+7. [**Contributor Guide & Good First Issues**](Contributor-Guide-and-Good-First-Issues) - Start here! Zero-database micro-contributions, 5-30 min tasks, and PR guide.
+8. [**Local Development & Environment Setup**](Local-Development-and-Environment-Setup) - Complete setup runbook for Windows (WSL 2), macOS, and Linux.
+9. [**Testing & Quality Gates**](Testing-and-Quality-Gates) - Automated test matrix (151 Python suites, pgTAP database tests, db linting).
+10. [**Troubleshooting & FAQ**](Troubleshooting-and-FAQ) - Solutions for Docker, WSL, Python environments, and database migrations.
+
+---
+
+## 🚀 Why Contribute to SafaiOS?
+
+SafaiOS is built with high engineering craft and is deliberately designed to be one of the most welcoming open-source projects on GitHub:
+
+- ⚡ **Zero-Database Local Testing**: Run the complete **151-suite Python regression matrix** immediately in `.venv` without needing a local database or cloud account.
+- 🎯 **Laser-Focused Micro-Issues**: Contributor tasks are cleanly scoped to single files with concrete acceptance criteria and zero ambiguity.
+- 🏎️ **Fast Review Turnaround**: Core maintainers prioritize first-time contributor pull requests with a target turnaround under 48 hours.
+- 🌍 **Real Civic Impact**: Your code contributes directly to cleaner streets, transparent governance, and environmental sustainability.
+
+👉 **Ready to get started?** Head over to our [**Contributor Guide & Good First Issues**](Contributor-Guide-and-Good-First-Issues) to pick your first task!
+
+---
+
+## 🔍 Key Project Specifications
+
+| Attribute | Specification |
+| :--- | :--- |
+| **Repository** | `TheVicky1/Safai_OS` |
+| **Primary Languages** | Python 3.11, PL/pgSQL, TypeScript / SQL |
+| **Vision Model** | Ultralytics YOLO11s (768px, conf 0.25, NMS IoU 0.60) |
+| **Dataset Scale** | `SafaiOS_Dataset_v10k` (10,000+ curated street waste images) |
+| **Taxonomy Classes** | Plastic Bottle, Wrapper/Bag, Paper/Cardboard, Glass, Metal Can |
+| **Database Engine** | PostgreSQL 17 (Supabase local stack) |
+| **Security Coverage** | Row-Level Security (RLS) enabled on 100% of tables |
+| **Automated Test Matrix**| 151 Python unit tests + 24 pgTAP database authorization tests |
+| **License** | MIT License |
+
+---
+
+<div align="center">
+
+**SafaiOS - The Intelligence Behind Cleaner Cities.**  
+[Main Repository](https://github.com/TheVicky1/Safai_OS) · [Issue Tracker](https://github.com/TheVicky1/Safai_OS/issues) · [Discussions](https://github.com/TheVicky1/Safai_OS/discussions)
+
+</div>
+
