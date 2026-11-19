@@ -45,3 +45,50 @@ Safai Coins operate on a strict, server-authoritative, append-only financial led
 
 ## 🔒 Idempotency & Anti-Double-Spend Protection
 
+In real-world distributed systems, network retries and duplicate HTTP requests frequently cause double-crediting. SafaiOS implements a two-tier database guardrail:
+
+### 1. Global Idempotency Key Uniqueness
+Every transaction requires an immutable, cryptographically unique `idempotency_key` (length 16 to 200 characters):
+```sql
+unique (idempotency_key)
+```
+
+### 2. Single-Reward-Per-Incident Index
+To guarantee that an incident report can **never** trigger multiple reward payouts under any race condition, the database enforces a partial unique index:
+```sql
+create unique index safai_coin_transactions_one_reward_per_incident_idx
+  on public.safai_coin_transactions (incident_id, transaction_type)
+  where transaction_type = 'REWARD_CREDIT' and status = 'POSTED';
+```
+Any secondary attempt to insert a `REWARD_CREDIT` for an already-rewarded incident fails immediately with a PostgreSQL unique violation (`23505`), preventing duplicate credits.
+
+---
+
+## 📊 Transaction Types & Lifecycles
+
+| Transaction Type | Direction | Trigger Condition |
+| :--- | :---: | :--- |
+| **`REWARD_CREDIT`** | `+` (Credit) | Minted upon confirmed verification and closure of an incident report. |
+| **`REDEMPTION_DEBIT`** | `-` (Debit) | Deducted when a citizen redeems coins for approved civic benefits. |
+| **`ADJUSTMENT`** | `+` / `-` | Administrative correction executed under strict Superadmin audit. |
+| **`REVERSAL`** | `+` / `-` | Voiding of a previous transaction due to fraud detection or dispute. |
+
+---
+
+## ⚡ Future Municipal Redemption Roadmap
+
+Safai Coins are architected to integrate seamlessly with public utility billing systems:
+
+- **Electricity & Water Subsidies**: Direct credit rebates against monthly municipal electricity or water bills.
+- **Public Transit Credits**: Metro and bus transit smartcard balance top-ups.
+- **Composting & Recycling Kits**: Subsidized municipal organic compost bins and waste segregation liners.
+- **Civic Leaderboards**: Public neighborhood cleanliness ratings and recognition for active citizen stewards.
+
+---
+
+<div align="center">
+
+[← Previous: Incident Lifecycle & Verification](Incident-Lifecycle-and-Verification) | [Next: Contributor Guide & Good First Issues →](Contributor-Guide-and-Good-First-Issues)
+
+</div>
+
