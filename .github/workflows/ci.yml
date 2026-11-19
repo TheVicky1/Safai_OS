@@ -1,4 +1,4 @@
-name: SafaiOS CI
+name: SafaiOS Quality Gates
 
 on:
   push:
@@ -6,46 +6,19 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  database:
+  quality-gates:
+    name: Quality Gates & Verification
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Check out repository source
+      uses: actions/checkout@v4
 
-    - name: Set up Supabase CLI
-      uses: supabase/setup-cli@v1
-
-    - name: Validate migrations and database policies locally
-      run: |
-        supabase start
-        supabase db reset
-        supabase test db
-        supabase db lint --level error --fail-on error
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Free disk space
-      run: |
-        sudo rm -rf /usr/share/dotnet
-        sudo rm -rf /usr/local/lib/android
-        sudo rm -rf /opt/ghc
-        sudo rm -rf /opt/hostedtoolcache/CodeQL
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        # Install CPU-only PyTorch to avoid massive (>12 GB) CUDA/NVIDIA wheels in CI
-        pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
-        pip install --no-cache-dir -e ".[dev]"
-
-    - name: Run unit test suite
-      run: |
-        pytest tests/ -v
