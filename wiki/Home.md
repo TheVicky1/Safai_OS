@@ -1,4 +1,4 @@
-# Welcome to the SafaiOS Official Wiki
+<h1 align="center">Welcome to the SafaiOS Official Wiki</h1>
 
 <div align="center">
 

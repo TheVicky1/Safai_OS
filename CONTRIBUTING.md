@@ -81,3 +81,10 @@ node scripts/check-links.mjs
 
 Maintainers review PRs within 48 hours. Thank you for contributing to open civic technology!
 
+---
+
+## 🏛️ Contributors Hall of Fame
+
+Every merged contribution is permanently celebrated in our [Contributors Hall of Fame](CONTRIBUTORS.md) and on the [GitHub Contributors Graph](https://github.com/TheVicky1/Safai_OS/graphs/contributors). Thank you for helping build cleaner cities with us!
+
+
