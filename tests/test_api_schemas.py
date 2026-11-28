@@ -65,7 +65,9 @@ def test_component_status_rejects_negative_latency():
         ComponentStatus(status="healthy", latency_ms=-10)
 
 
-@pytest.mark.parametrize("latency", [float("inf"), float("-inf"), float("nan")])
+@pytest.mark.parametrize(
+    "latency", [float("inf"), float("-inf"), float("nan")]
+)
 def test_component_status_rejects_non_finite_latency(latency):
     with pytest.raises(ValidationError):
         ComponentStatus(status="healthy", latency_ms=latency)
